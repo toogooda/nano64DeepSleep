@@ -20,7 +20,7 @@ void xInterrupt0();
 void xInterrupt1();
 void xInterrupt2();
 
-enum wakeReasonCode {
+enum wakeReasonCodeEnum {
   WAKE_NONE = 0,
   WAKE_INT0_H = 1,
   WAKE_INT0_L = 2,
@@ -30,7 +30,6 @@ enum wakeReasonCode {
   WAKE_INT2_L = 6,
   WAKE_WDT = 7
 };
-typedef wakeReasonCode wakeReasonCodeEnum;
 
 class n64DS {
   private:
