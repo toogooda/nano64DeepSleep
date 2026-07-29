@@ -10,31 +10,10 @@ Centralized Deep Sleep, Watchdog Timer (WDT), and Wake Interrupt Management Libr
 - **EIFR Interrupt Flag Clearing**: Prevents immediate false wake-up triggers during interrupt setup.
 - **Packaging Reed Switch Support**: Software debouncing for magnetic reed switch toggles (`recordPackagingToggle`).
 
-## Usage
+## Installation
 
-In `platformio.ini`:
+Add to `platformio.ini`:
 ```ini
 lib_deps =
-    symlink://../../Libraries/nano64DeepSleep
-```
-
-In `main.cpp`:
-```cpp
-#include <nano64DeepSleep.h>
-
-n64DS DS;
-
-void setup() {
-    DS.enableWakeExternal(2, 50, true); // Pin D2, 50ms cooldown, use internal pullup
-    DS.enableWakeTimer(0, 15, 0);       // Sleep for 15 minutes
-}
-
-void loop() {
-    DS.sleep();
-    if (wakeWDT) {
-        // Woke from timer
-    } else if (wakeExternal != 0) {
-        // Woke from external interrupt
-    }
-}
+    https://github.com/toogooda/nano64DeepSleep.git
 ```
