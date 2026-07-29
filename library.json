@@ -1,0 +1,24 @@
+{
+  "name": "nano64DeepSleep",
+  "version": "1.0.0",
+  "description": "Centralized Deep Sleep, Watchdog Timer, and Wake Interrupt Management Library for ATmega644PA LoRaFarmNet Field Nodes",
+  "keywords": [
+    "avr",
+    "atmega644p",
+    "deepsleep",
+    "watchdog",
+    "power",
+    "interrupt"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toogooda/nano64DeepSleep.git"
+  },
+  "authors": [
+    {
+      "name": "LoRaFarmNet"
+    }
+  ],
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}
