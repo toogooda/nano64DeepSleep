@@ -140,7 +140,6 @@ void n64DS::enableWakeExternal(byte xint, unsigned long cooldownMs, bool usePull
 void n64DS::_setPins() {
   for (int i = 0; i < NUM_DIGITAL_PINS; i++) {
     pinMode(i, INPUT);
-    digitalWrite(i, LOW);
   }
 
   for (int i = 0; i < NUM_DIGITAL_PINS; i++) {
@@ -175,60 +174,68 @@ void n64DS::sleep() {
     _disableADC();
 
     if (_wdt) {
-      _setWDTPrescaler(8);
-      for (i = 0; i < _eights; i++) {
-        _sleep();
-        if (_shouldSuppressExternalWake()) {
-          continue;
+      if (_eights > 0) {
+        _setWDTPrescaler(8);
+        for (i = 0; i < _eights; i++) {
+          _sleep();
+          if (_shouldSuppressExternalWake()) {
+            continue;
+          }
+          if (wakeExternal != 0) {
+            wakeReason = (byte)wakeReasonCode;
+            _enableADC();
+            return;
+          }
+          wakeWDT = false;
         }
-        if (wakeExternal != 0) {
-          wakeReason = (byte)wakeReasonCode;
-          _enableADC();
-          return;
-        }
-        wakeWDT = false;
       }
 
-      _setWDTPrescaler(4);
-      for (i = 0; i < _fours; i++) {
-        _sleep();
-        if (_shouldSuppressExternalWake()) {
-          continue;
+      if (_fours > 0) {
+        _setWDTPrescaler(4);
+        for (i = 0; i < _fours; i++) {
+          _sleep();
+          if (_shouldSuppressExternalWake()) {
+            continue;
+          }
+          if (wakeExternal != 0) {
+            wakeReason = (byte)wakeReasonCode;
+            _enableADC();
+            return;
+          }
+          wakeWDT = false;
         }
-        if (wakeExternal != 0) {
-          wakeReason = (byte)wakeReasonCode;
-          _enableADC();
-          return;
-        }
-        wakeWDT = false;
       }
 
-      _setWDTPrescaler(2);
-      for (i = 0; i < _twos; i++) {
-        _sleep();
-        if (_shouldSuppressExternalWake()) {
-          continue;
+      if (_twos > 0) {
+        _setWDTPrescaler(2);
+        for (i = 0; i < _twos; i++) {
+          _sleep();
+          if (_shouldSuppressExternalWake()) {
+            continue;
+          }
+          if (wakeExternal != 0) {
+            wakeReason = (byte)wakeReasonCode;
+            _enableADC();
+            return;
+          }
+          wakeWDT = false;
         }
-        if (wakeExternal != 0) {
-          wakeReason = (byte)wakeReasonCode;
-          _enableADC();
-          return;
-        }
-        wakeWDT = false;
       }
 
-      _setWDTPrescaler(1);
-      for (i = 0; i < _ones; i++) {
-        _sleep();
-        if (_shouldSuppressExternalWake()) {
-          continue;
+      if (_ones > 0) {
+        _setWDTPrescaler(1);
+        for (i = 0; i < _ones; i++) {
+          _sleep();
+          if (_shouldSuppressExternalWake()) {
+            continue;
+          }
+          if (wakeExternal != 0) {
+            wakeReason = (byte)wakeReasonCode;
+            _enableADC();
+            return;
+          }
+          wakeWDT = false;
         }
-        if (wakeExternal != 0) {
-          wakeReason = (byte)wakeReasonCode;
-          _enableADC();
-          return;
-        }
-        wakeWDT = false;
       }
 
       wakeReason = (byte)wakeReasonCode;
@@ -276,17 +283,18 @@ void n64DS::lightSleep() {
 void n64DS::_setWDTPrescaler(byte inTime) {
   byte _prescaler;
   switch (inTime) {
-    case 8: _prescaler = 9; break;   // 8s
-    case 4: _prescaler = 8; break;   // 4s
-    case 2: _prescaler = 7; break;   // 2s
-    case 1: _prescaler = 6; break;   // 1s
+    case 8: _prescaler = 33; break;  // 8s (0b00100001 = (1<<WDP3)|(1<<WDP0))
+    case 4: _prescaler = 32; break;  // 4s (0b00100000 = (1<<WDP3))
+    case 2: _prescaler = 7; break;   // 2s (0b00000111)
+    case 1: _prescaler = 6; break;   // 1s (0b00000110)
     case 16: _prescaler = 0; break;  // 16ms
-    default: _prescaler = 6; break;  // fallback to 1s
+    default: return;
   }
   cli();
   wdt_reset();
-  WDTCSR |= (1 << WDCE) | (1 << WDE);
-  WDTCSR = (1 << WDIE) | _prescaler;
+  WDTCSR = (24);
+  WDTCSR = (_prescaler);
+  WDTCSR |= (1 << 6);
   sei();
 }
 
